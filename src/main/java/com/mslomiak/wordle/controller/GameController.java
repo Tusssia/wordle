@@ -1,5 +1,7 @@
 package com.mslomiak.wordle.controller;
 
+import com.mslomiak.wordle.service.WordService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,7 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GameController {
 
-    public String wordle;
+    @Autowired
+    private WordService wordService;
 
     @GetMapping("/")
     public String welcome() {
@@ -16,16 +19,21 @@ public class GameController {
 
     @GetMapping("/game")
     public String newGame() {
-        wordle = "shrine";
+        wordService.createWordOfDay();
         return "You started a new game";
     }
 
-    @GetMapping("/game/")
-    public String checkWord(@RequestParam String word) {
-        if (wordle.equals(word)) {
-            return "Great! You won";
+    @GetMapping("/wordOfTheDay")
+    public String wordOfTheDay() {
+        return wordService.getWordOfTheDay();
+    }
+
+    @GetMapping("/newgame")
+    public String guessWord (@RequestParam String word) {
+        if (wordService.checkWord(word)) {
+            return "you won!";
         } else {
-            return "Try again";
+            return "try again";
         }
     }
 
